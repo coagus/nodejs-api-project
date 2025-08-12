@@ -78,6 +78,7 @@ build/
 
 # Logs
 logs/
+mysql-logs/
 *.log
 
 # OS generated files

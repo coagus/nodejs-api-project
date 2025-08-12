@@ -24,7 +24,14 @@
     "baseUrl": "./src",    
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
+    "emitDecoratorMetadata": true,
+    "paths": {
+      "@/*": ["*"],
+      "@/core/*": ["core/*"],
+      "@/features/*": ["features/*"],
+      "@/shared/*": ["shared/*"],
+      "@/infrastructure/*": ["infrastructure/*"]
+    },
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]

@@ -1,18 +1,42 @@
-import express from 'express';
+import { createExpressApp } from '@/infrastructure/server/express.config';
+import { testConnection } from '@/infrastructure/config/database.config';
+import { appLogger } from '@/infrastructure/logger/logger.service';
 
-const app = express();
+const app = createExpressApp();
 
-// Health check endpoint
-app.get('/health', (req, res) => {
-  res.status(200).json({
-    success: true,
-    message: 'API funcionando correctamente',
-    timestamp: new Date().toISOString(),
-    version: 'v1',
-    environment: 'development',
-  });
-});
+const checkDatabaseConnection = async (): Promise<void> => {
+  try {
+    appLogger.info('Verificando conexión a la base de datos...');
+    
+    const isConnected = await testConnection();
+    
+    if (isConnected) {
+      appLogger.info('✅ Conexión a la base de datos establecida exitosamente');
+    } else {
+      throw new Error('No se pudo establecer conexión con la base de datos');
+    }
+  } catch (error) {
+    appLogger.error('❌ Error de conexión a la base de datos:', error);
+    throw error;
+  }
+};
 
-app.listen(3000, () => {
-  console.log('Server is running on port 3000');
-});
+const initializeApp = async (): Promise<void> => {
+  try {
+    appLogger.info('🚀 Iniciando API...');
+    
+    await checkDatabaseConnection();
+    
+    // Aquí puedes agregar más inicializaciones si es necesario
+    // - Conexiones a servicios externos
+    // - Carga de datos iniciales
+    // - Verificación de migraciones
+    
+    appLogger.info('✅ Aplicación inicializada correctamente');
+  } catch (error) {
+    appLogger.error('❌ Error al inicializar la aplicación:', error);
+    process.exit(1);
+  }
+};
+
+export { app, initializeApp };

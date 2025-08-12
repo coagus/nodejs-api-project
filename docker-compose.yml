@@ -1,0 +1,27 @@
+# docker-compose.yml
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: project-mysql-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-S3cr3t0}
+      MYSQL_DATABASE: ${DB_NAME:-project_db}
+      MYSQL_USER: ${DB_USER:-agustin}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-pa55w0rd}
+    ports:
+      - "${DB_PORT:-3306}:3306"
+    volumes:
+      - ./resources/database/script.sql:/docker-entrypoint-initdb.d/script.sql
+    command: --default-authentication-plugin=mysql_native_password
+    networks:
+      - project_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+networks:
+  project_network:
+    driver: bridge
